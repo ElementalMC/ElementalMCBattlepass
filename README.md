@@ -1,4 +1,4 @@
-# ElementalMCBattlePass
+# ElementalMCBattlepass
 ProjectKorra compatible stats tracking plugin.
 
 
