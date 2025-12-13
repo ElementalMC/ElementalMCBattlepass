@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: ElementalBattlepassTracker.java
-// LOCATION: src/main/java/com/elemental/battlepass/
+// FILE 2: ElementalMCBattlepassTracker.java
+// LOCATION: src/main/java/com/elemental/battlepass/ElementalMCBattlepassTracker.java
+// REPLACE ENTIRE FILE
 // ============================================================================
 package com.elemental.battlepass;
 
@@ -52,9 +53,12 @@ public class ElementalMCBattlepassTracker extends JavaPlugin {
             
             integrationManager.initialize();
             
-            seasonManager.loadActiveSeason();
-            
-            questManager.loadQuestsForActiveSeason();
+            if (databaseManager.isConnected()) {
+                seasonManager.loadActiveSeason();
+                questManager.loadQuestsForActiveSeason();
+            } else {
+                getLogger().warning("Database not available - configure it in config.yml and reload!");
+            }
             
             getLogger().info("ElementalBattlepassTracker has been enabled successfully!");
             

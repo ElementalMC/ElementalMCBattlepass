@@ -1,9 +1,30 @@
+# ============================================================================
+# FILE 6: config.yml
+# LOCATION: src/main/resources/config.yml
+# REPLACE ENTIRE FILE
+# ============================================================================
+
+# ============================================================================
+# ElementalBattlepassTracker Configuration
+# ============================================================================
+
+# DATABASE CONFIGURATION
+# The plugin will work WITHOUT a database, but features will be limited
+# Configure these settings and use /battlepass reload to connect
 database:
-  host: localhost
+  # Leave host EMPTY to run without database
+  # Example: "localhost" or "your-database-host.com"
+  host: ''
+  
   port: 3306
+  
+  # Database name (will be created automatically if it doesn't exist)
   database: battlepass
+  
   username: root
   password: ''
+  
+  # Connection pool settings (advanced)
   pool:
     maximum-pool-size: 10
     minimum-idle: 2
@@ -11,11 +32,21 @@ database:
     connection-timeout: 30000
     idle-timeout: 600000
 
+# PERFORMANCE SETTINGS
 performance:
+  # How often to check player movement (in ticks, 20 = 1 second)
+  # Higher = less CPU usage, but less accurate distance tracking
   movement-throttle-ticks: 20
+  
+  # Minimum seconds between chat messages to count for quests
+  # Prevents spam from counting toward chat quests
   chat-rate-limit-seconds: 2
+  
+  # How often to flush cached stats to database (in seconds)
   stats-flush-interval: 300
 
+# FEATURE TOGGLES
+# Disable features you don't need to improve performance
 features:
   track-playtime: true
   track-movement: true
@@ -27,4 +58,5 @@ features:
   track-bounties: true
   track-chat-games: true
 
+# Enable debug logging
 debug: false

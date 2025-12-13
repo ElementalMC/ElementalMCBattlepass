@@ -1,13 +1,13 @@
 // ============================================================================
-// FILE: QuestManager.java
-// LOCATION: src/main/java/com/elemental/battlepass/managers/
+// FILE 4: QuestManager.java  
+// LOCATION: src/main/java/com/elemental/battlepass/managers/QuestManager.java
+// REPLACE ENTIRE FILE
 // ============================================================================
 package com.elemental.battlepass.managers;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import com.elemental.battlepass.models.Quest;
 import com.elemental.battlepass.models.QuestProgress;
-import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,6 +29,11 @@ public class QuestManager {
     }
 
     public void loadQuestsForActiveSeason() {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            plugin.getLogger().warning("Cannot load quests - database not connected!");
+            return;
+        }
+        
         int seasonId = plugin.getSeasonManager().getActiveSeasonId();
         if (seasonId == -1) {
             plugin.getLogger().warning("No active season found, cannot load quests!");
@@ -67,6 +72,10 @@ public class QuestManager {
     }
 
     public void loadPlayerProgress(UUID uuid) {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            return;
+        }
+        
         int seasonId = plugin.getSeasonManager().getActiveSeasonId();
         if (seasonId == -1) return;
 
@@ -181,7 +190,6 @@ public class QuestManager {
             qp.isCompleted() ? new java.sql.Timestamp(System.currentTimeMillis()) : null
         );
     }
-
 
     public void shutdown() {
         plugin.getLogger().info("Flushing all quest progress to database...");

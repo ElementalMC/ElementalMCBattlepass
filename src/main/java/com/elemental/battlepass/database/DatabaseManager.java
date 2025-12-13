@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: DatabaseManager.java
-// LOCATION: src/main/java/com/elemental/battlepass/database/
+// FILE 1: DatabaseManager.java
+// LOCATION: src/main/java/com/elemental/battlepass/database/DatabaseManager.java
+// REPLACE ENTIRE FILE
 // ============================================================================
 package com.elemental.battlepass.database;
 
@@ -19,47 +20,86 @@ public class DatabaseManager {
 
     private final ElementalMCBattlepassTracker plugin;
     private HikariDataSource dataSource;
+    private boolean connected = false;
 
     public DatabaseManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
-        initialize();
-        createTables();
+        attemptConnection();
     }
 
-    private void initialize() {
+    public boolean attemptConnection() {
         FileConfiguration config = plugin.getConfig();
         
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + 
-            config.getString("database.host", "localhost") + ":" +
-            config.getInt("database.port", 3306) + "/" +
-            config.getString("database.database", "battlepass"));
-        hikariConfig.setUsername(config.getString("database.username", "root"));
-        hikariConfig.setPassword(config.getString("database.password", ""));
+        String host = config.getString("database.host", "");
+        String database = config.getString("database.database", "");
+        String username = config.getString("database.username", "");
+        String password = config.getString("database.password", "");
         
-        hikariConfig.setMaximumPoolSize(config.getInt("database.pool.maximum-pool-size", 10));
-        hikariConfig.setMinimumIdle(config.getInt("database.pool.minimum-idle", 2));
-        hikariConfig.setMaxLifetime(config.getLong("database.pool.max-lifetime", 1800000));
-        hikariConfig.setConnectionTimeout(config.getLong("database.pool.connection-timeout", 30000));
-        hikariConfig.setIdleTimeout(config.getLong("database.pool.idle-timeout", 600000));
-        
-        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
-        hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
-        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-        hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
-        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
-        hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
-        hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
-        
-        this.dataSource = new HikariDataSource(hikariConfig);
-        
-        plugin.getLogger().info("Database connection pool initialized successfully!");
+        if (host.isEmpty() || database.isEmpty()) {
+            plugin.getLogger().warning("Database not configured! Plugin will run without database support.");
+            plugin.getLogger().warning("Configure database in config.yml and use /battlepass reload to connect.");
+            connected = false;
+            return false;
+        }
+
+        try {
+            if (dataSource != null && !dataSource.isClosed()) {
+                dataSource.close();
+            }
+
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" +
+                config.getInt("database.port", 3306) + "/" + database +
+                "?createDatabaseIfNotExist=true&autoReconnect=true&useSSL=false");
+            hikariConfig.setUsername(username);
+            hikariConfig.setPassword(password);
+            
+            hikariConfig.setMaximumPoolSize(config.getInt("database.pool.maximum-pool-size", 10));
+            hikariConfig.setMinimumIdle(config.getInt("database.pool.minimum-idle", 2));
+            hikariConfig.setMaxLifetime(config.getLong("database.pool.max-lifetime", 1800000));
+            hikariConfig.setConnectionTimeout(config.getLong("database.pool.connection-timeout", 30000));
+            hikariConfig.setIdleTimeout(config.getLong("database.pool.idle-timeout", 600000));
+            
+            hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+            hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
+            hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
+            hikariConfig.addDataSourceProperty("cacheResultSetMetadata", "true");
+            hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
+            hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
+            hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
+            
+            this.dataSource = new HikariDataSource(hikariConfig);
+            
+            try (Connection conn = dataSource.getConnection()) {
+                connected = true;
+                plugin.getLogger().info("✓ Database connection established successfully!");
+                createTables();
+                return true;
+            }
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to connect to database: " + e.getMessage());
+            plugin.getLogger().warning("Plugin will continue without database support.");
+            plugin.getLogger().warning("Fix database configuration and use /battlepass reload to reconnect.");
+            connected = false;
+            
+            if (dataSource != null && !dataSource.isClosed()) {
+                dataSource.close();
+                dataSource = null;
+            }
+            
+            return false;
+        }
     }
 
     private void createTables() {
+        if (!isConnected()) return;
+
+        plugin.getLogger().info("Setting up database tables...");
+        
         String[] schemas = {
             "CREATE TABLE IF NOT EXISTS players (" +
             "uuid VARCHAR(36) PRIMARY KEY," +
@@ -155,26 +195,37 @@ public class DatabaseManager {
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
         };
 
+        int successCount = 0;
         for (String schema : schemas) {
             try (Connection conn = getConnection();
                  PreparedStatement stmt = conn.prepareStatement(schema)) {
                 stmt.executeUpdate();
+                successCount++;
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "Failed to create table", e);
             }
         }
         
-        plugin.getLogger().info("Database tables created/verified successfully!");
+        plugin.getLogger().info("✓ Database tables ready! (" + successCount + "/" + schemas.length + " created/verified)");
     }
 
     public Connection getConnection() throws SQLException {
+        if (!isConnected()) {
+            throw new SQLException("Database is not connected! Configure database in config.yml");
+        }
+        
         if (dataSource == null || dataSource.isClosed()) {
             throw new SQLException("DataSource is not initialized or closed");
         }
+        
         return dataSource.getConnection();
     }
 
     public CompletableFuture<Void> executeAsync(String sql, Object... params) {
+        if (!isConnected()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        
         return CompletableFuture.runAsync(() -> {
             try (Connection conn = getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -185,15 +236,27 @@ public class DatabaseManager {
                 stmt.executeUpdate();
                 
             } catch (SQLException e) {
-                plugin.getLogger().log(Level.SEVERE, "Database async execution failed: " + sql, e);
+                if (plugin.getConfigManager().isDebugMode()) {
+                    plugin.getLogger().log(Level.WARNING, "Database async execution failed: " + sql, e);
+                }
             }
         });
+    }
+
+    public boolean isConnected() {
+        return connected && dataSource != null && !dataSource.isClosed();
+    }
+
+    public void reconnect() {
+        plugin.getLogger().info("Attempting to reconnect to database...");
+        attemptConnection();
     }
 
     public void close() {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
-            plugin.getLogger().info("Database connection pool closed!");
+            connected = false;
+            plugin.getLogger().info("Database connection closed!");
         }
     }
 }

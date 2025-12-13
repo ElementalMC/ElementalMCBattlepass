@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: SeasonManager.java
-// LOCATION: src/main/java/com/elemental/battlepass/managers/
+// FILE 3: SeasonManager.java
+// LOCATION: src/main/java/com/elemental/battlepass/managers/SeasonManager.java
+// REPLACE ENTIRE FILE
 // ============================================================================
 package com.elemental.battlepass.managers;
 
@@ -20,6 +21,11 @@ public class SeasonManager {
     }
 
     public void loadActiveSeason() {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            plugin.getLogger().warning("Cannot load season - database not connected!");
+            return;
+        }
+        
         String sql = "SELECT * FROM seasons WHERE active = TRUE LIMIT 1";
         
         try (Connection conn = plugin.getDatabaseManager().getConnection();
@@ -46,6 +52,11 @@ public class SeasonManager {
     }
 
     public int createSeason(String name) {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            plugin.getLogger().warning("Cannot create season - database not connected!");
+            return -1;
+        }
+        
         String deactivateSql = "UPDATE seasons SET active = FALSE WHERE active = TRUE";
         
         try (Connection conn = plugin.getDatabaseManager().getConnection();
@@ -80,6 +91,11 @@ public class SeasonManager {
     }
 
     public boolean endSeason(int seasonId) {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            plugin.getLogger().warning("Cannot end season - database not connected!");
+            return false;
+        }
+        
         String sql = "UPDATE seasons SET active = FALSE, end_date = NOW() WHERE season_id = ?";
         
         try (Connection conn = plugin.getDatabaseManager().getConnection();
@@ -102,6 +118,10 @@ public class SeasonManager {
     }
 
     public String getPlayerTier(String uuid, int seasonId) {
+        if (!plugin.getDatabaseManager().isConnected()) {
+            return "free";
+        }
+        
         String sql = "SELECT tier FROM player_tiers WHERE uuid = ? AND season_id = ?";
         
         try (Connection conn = plugin.getDatabaseManager().getConnection();
