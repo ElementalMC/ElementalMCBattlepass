@@ -48,12 +48,6 @@
             <version>8.2.0</version>
             <scope>compile</scope>
         </dependency>
-
-        <!-- 
-        NOTE: All third-party plugin integrations use REFLECTION
-        This means NO compile-time dependencies are needed!
-        The integrations will work at runtime if the plugins are installed.
-        -->
     </dependencies>
 
     <build>
@@ -89,6 +83,9 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!-- Replace default JAR with shaded one -->
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+
                             <!-- Relocate HikariCP to avoid conflicts -->
                             <relocations>
                                 <relocation>
@@ -96,6 +93,7 @@
                                     <shadedPattern>com.elemental.battlepass.libs.hikari</shadedPattern>
                                 </relocation>
                             </relocations>
+
                             <!-- Remove signatures to avoid issues -->
                             <filters>
                                 <filter>
