@@ -1,0 +1,41 @@
+name: ElementalBattlepassTracker
+version: 1.0.0
+main: com.elemental.battlepass.ElementalMCBattlepassTracker
+api-version: '1.21'
+author: DEMXN13
+description: Complete battlepass tracking system
+
+commands:
+  battlepass:
+    description: Main battlepass command
+    usage: /battlepass <subcommand>
+    aliases: [bp]
+    permission: battlepass.use
+
+permissions:
+  battlepass.use:
+    description: Basic battlepass access
+    default: true
+  battlepass.admin:
+    description: Admin commands
+    default: op
+  battlepass.free:
+    description: Free tier access
+    default: true
+  battlepass.premium:
+    description: Premium tier access
+    default: false
+  battlepass.collector:
+    description: Collector tier access
+    default: false
+
+softdepend: 
+  - ProjectKorra
+  - CombatLogX
+  - CoinsEngine
+  - ExcellentCrates
+  - KixsChatGames
+  - Votifier
+  - NuVotifier
+  - zAuctionHouseV3
+  - BountyHunters
