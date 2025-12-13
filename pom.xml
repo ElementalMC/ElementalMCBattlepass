@@ -93,7 +93,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <originalArtifactAttached>false</originalArtifactAttached>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>${project.build.finalName}</finalName>
 
