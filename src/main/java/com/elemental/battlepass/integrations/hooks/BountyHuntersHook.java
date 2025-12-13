@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: BountyHuntersHook.java
-// LOCATION: src/main/java/com/elemental/battlepass/integrations/hooks/
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
@@ -15,6 +15,7 @@ public class BountyHuntersHook implements Listener {
     }
 
     public void hook() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        // BountyHunters integration can be added when the specific events are known
+        plugin.getLogger().info("BountyHunters hook registered (waiting for event implementation)");
     }
 }

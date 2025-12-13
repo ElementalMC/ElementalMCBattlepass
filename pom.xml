@@ -17,56 +17,43 @@
     </properties>
 
     <repositories>
+        <!-- Paper API -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>sirblobman-public</id>
-            <url>https://nexus.sirblobman.xyz/public/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
+
     <dependencies>
+        <!-- Paper API - The ONLY required dependency -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>1.21-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- HikariCP - Database connection pooling (INCLUDED in JAR) -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.1.0</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- MySQL Connector (INCLUDED in JAR) -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.2.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.projectkorra</groupId>
-            <artifactId>projectkorra</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.sirblobman.api</groupId>
-            <artifactId>core</artifactId>
-            <version>2.9-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.sirblobman.combatlogx</groupId>
-            <artifactId>api</artifactId>
-            <version>11.6-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
+
+        <!-- 
+        NOTE: All third-party plugin integrations use REFLECTION
+        This means NO compile-time dependencies are needed!
+        The integrations will work at runtime if the plugins are installed.
+        -->
     </dependencies>
 
     <build>
@@ -77,16 +64,20 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+
         <plugins>
+            <!-- Java Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
+
+            <!-- Shade Plugin - Bundles HikariCP and MySQL driver into JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -98,12 +89,24 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!-- Relocate HikariCP to avoid conflicts -->
                             <relocations>
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>com.elemental.battlepass.libs.hikari</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <!-- Remove signatures to avoid issues -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>

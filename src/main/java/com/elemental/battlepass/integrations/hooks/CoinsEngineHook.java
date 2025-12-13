@@ -1,12 +1,10 @@
 // ============================================================================
 // FILE: CoinsEngineHook.java
-// LOCATION: src/main/java/com/elemental/battlepass/integrations/hooks/
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalBattlepassTracker;
-import su.nightexpress.coinsengine.api.event.CoinsReceiveEvent;
-import su.nightexpress.coinsengine.api.event.CoinsTransferEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,24 +17,49 @@ public class CoinsEngineHook implements Listener {
     }
 
     public void hook() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        try {
+            Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        } catch (ClassNotFoundException e) {
+            plugin.getLogger().warning("CoinsEngine classes not found, skipping integration");
+        }
     }
 
     @EventHandler
-    public void onCoinsReceive(CoinsReceiveEvent event) {
-        Player player = event.getPlayer();
-        double amount = event.getAmount();
-        
-        plugin.getStatTracker().trackMoneyEarned(player, amount);
-        plugin.getQuestManager().incrementProgress(player.getUniqueId(), "EARN_MONEY", null, (int) amount);
+    public void onCoinsReceive(org.bukkit.event.Event event) {
+        try {
+            Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
+            if (!eventClass.isInstance(event)) return;
+            
+            java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
+            Player player = (Player) getPlayer.invoke(event);
+            
+            java.lang.reflect.Method getAmount = eventClass.getMethod("getAmount");
+            double amount = (Double) getAmount.invoke(event);
+            
+            plugin.getStatTracker().trackMoneyEarned(player, amount);
+            plugin.getQuestManager().incrementProgress(player.getUniqueId(), "EARN_MONEY", null, (int) amount);
+        } catch (Exception e) {
+            // Silently fail
+        }
     }
 
     @EventHandler
-    public void onCoinsTransfer(CoinsTransferEvent event) {
-        Player sender = event.getSender();
-        double amount = event.getAmount();
-        
-        plugin.getStatTracker().trackMoneySpent(sender, amount);
-        plugin.getQuestManager().incrementProgress(sender.getUniqueId(), "SPEND_MONEY", null, (int) amount);
+    public void onCoinsTransfer(org.bukkit.event.Event event) {
+        try {
+            Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsTransferEvent");
+            if (!eventClass.isInstance(event)) return;
+            
+            java.lang.reflect.Method getSender = eventClass.getMethod("getSender");
+            Player sender = (Player) getSender.invoke(event);
+            
+            java.lang.reflect.Method getAmount = eventClass.getMethod("getAmount");
+            double amount = (Double) getAmount.invoke(event);
+            
+            plugin.getStatTracker().trackMoneySpent(sender, amount);
+            plugin.getQuestManager().incrementProgress(sender.getUniqueId(), "SPEND_MONEY", null, (int) amount);
+        } catch (Exception e) {
+            // Silently fail
+        }
     }
 }
