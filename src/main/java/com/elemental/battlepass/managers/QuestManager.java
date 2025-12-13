@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -163,13 +164,14 @@ public class QuestManager {
         }
     }
 
-    private void saveProgressAsync(QuestProgress qp) {
+    private CompletableFuture<Void> saveProgressAsync(QuestProgress qp) {
         String sql = "INSERT INTO player_progress (uuid, season_id, quest_id, progress, start_timestamp, completed, completed_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?) " +
                      "ON DUPLICATE KEY UPDATE progress = VALUES(progress), start_timestamp = VALUES(start_timestamp), " +
                      "completed = VALUES(completed), completed_at = VALUES(completed_at)";
 
-        plugin.getDatabaseManager().executeAsync(sql,
+        return plugin.getDatabaseManager().executeAsync(
+            sql,
             qp.getUuid(),
             qp.getSeasonId(),
             qp.getQuestId(),
@@ -179,6 +181,7 @@ public class QuestManager {
             qp.isCompleted() ? new java.sql.Timestamp(System.currentTimeMillis()) : null
         );
     }
+
 
     public void shutdown() {
         plugin.getLogger().info("Flushing all quest progress to database...");
