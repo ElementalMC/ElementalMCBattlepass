@@ -86,6 +86,9 @@
                             <!-- Replace default JAR with shaded one -->
                             <shadedArtifactAttached>false</shadedArtifactAttached>
 
+                            <!-- Prevent generating dependency-reduced-pom.xml -->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+
                             <!-- Relocate HikariCP to avoid conflicts -->
                             <relocations>
                                 <relocation>
