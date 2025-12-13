@@ -1,4 +1,3 @@
-
 // ============================================================================
 // FILE: DatabaseManager.java
 // LOCATION: src/main/java/com/elemental/battlepass/database/

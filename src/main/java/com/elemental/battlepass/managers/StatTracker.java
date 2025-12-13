@@ -1,4 +1,3 @@
-
 // ============================================================================
 // FILE: StatTracker.java
 // LOCATION: src/main/java/com/elemental/battlepass/managers/
