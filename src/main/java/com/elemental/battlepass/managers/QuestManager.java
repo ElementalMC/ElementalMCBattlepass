@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.managers;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import com.elemental.battlepass.models.Quest;
 import com.elemental.battlepass.models.QuestProgress;
 import org.bukkit.entity.Player;
@@ -20,11 +20,11 @@ import java.util.logging.Level;
 
 public class QuestManager {
 
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final Map<String, Quest> quests = new ConcurrentHashMap<>();
     private final Map<UUID, Map<String, QuestProgress>> playerProgress = new ConcurrentHashMap<>();
     
-    public QuestManager(ElementalBattlepassTracker plugin) {
+    public QuestManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

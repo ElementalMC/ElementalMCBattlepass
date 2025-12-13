@@ -4,15 +4,15 @@
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class CoinsEngineHook implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public CoinsEngineHook(ElementalBattlepassTracker plugin) {
+    public CoinsEngineHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

@@ -4,13 +4,13 @@
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.event.Listener;
 
 public class InventoryListener implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public InventoryListener(ElementalBattlepassTracker plugin) {
+    public InventoryListener(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 }

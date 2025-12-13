@@ -4,13 +4,13 @@
 // ============================================================================
 package com.elemental.battlepass.integrations;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import com.elemental.battlepass.integrations.hooks.*;
 import org.bukkit.plugin.Plugin;
 
 public class IntegrationManager {
 
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     
     private ProjectKorraHook projectKorraHook;
     private CombatLogXHook combatLogXHook;
@@ -21,7 +21,7 @@ public class IntegrationManager {
     private ZAuctionHouseHook zAuctionHouseHook;
     private BountyHuntersHook bountyHuntersHook;
 
-    public IntegrationManager(ElementalBattlepassTracker plugin) {
+    public IntegrationManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,9 +15,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BlockListener implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public BlockListener(ElementalBattlepassTracker plugin) {
+    public BlockListener(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

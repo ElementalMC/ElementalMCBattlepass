@@ -4,13 +4,13 @@
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.event.Listener;
 
 public class BountyHuntersHook implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public BountyHuntersHook(ElementalBattlepassTracker plugin) {
+    public BountyHuntersHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

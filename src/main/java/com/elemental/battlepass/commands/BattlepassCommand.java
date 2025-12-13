@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.commands;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BattlepassCommand implements CommandExecutor {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public BattlepassCommand(ElementalBattlepassTracker plugin) {
+    public BattlepassCommand(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

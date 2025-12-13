@@ -4,15 +4,15 @@
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class KixsChatGamesHook implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public KixsChatGamesHook(ElementalBattlepassTracker plugin) {
+    public KixsChatGamesHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

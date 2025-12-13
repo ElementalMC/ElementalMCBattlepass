@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,12 +17,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MovementListener implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final Map<UUID, Location> lastLocations = new HashMap<>();
     private final Map<UUID, Long> lastCheck = new HashMap<>();
     private final Map<UUID, String> lastBiome = new HashMap<>();
 
-    public MovementListener(ElementalBattlepassTracker plugin) {
+    public MovementListener(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

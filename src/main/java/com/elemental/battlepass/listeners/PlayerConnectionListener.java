@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,9 +20,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public class PlayerConnectionListener implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public PlayerConnectionListener(ElementalBattlepassTracker plugin) {
+    public PlayerConnectionListener(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

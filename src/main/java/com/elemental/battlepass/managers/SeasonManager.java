@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.managers;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import com.elemental.battlepass.models.Season;
 
 import java.sql.*;
@@ -12,10 +12,10 @@ import java.util.logging.Level;
 
 public class SeasonManager {
 
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private Season activeSeason;
 
-    public SeasonManager(ElementalBattlepassTracker plugin) {
+    public SeasonManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

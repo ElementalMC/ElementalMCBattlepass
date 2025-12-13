@@ -4,15 +4,15 @@
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ExcellentCratesHook implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public ExcellentCratesHook(ElementalBattlepassTracker plugin) {
+    public ExcellentCratesHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.managers;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -12,13 +12,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TimerManager {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final Map<UUID, Long> sessionStarts = new ConcurrentHashMap<>();
     private final Map<UUID, Long> lastDeathTime = new ConcurrentHashMap<>();
     private final Map<String, Long> cooldowns = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> killStreaks = new ConcurrentHashMap<>();
 
-    public TimerManager(ElementalBattlepassTracker plugin) {
+    public TimerManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
         startPlaytimeTracker();
     }

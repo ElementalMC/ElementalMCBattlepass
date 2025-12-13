@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,9 +15,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class CombatListener implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
 
-    public CombatListener(ElementalBattlepassTracker plugin) {
+    public CombatListener(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 

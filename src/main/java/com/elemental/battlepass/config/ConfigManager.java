@@ -4,14 +4,14 @@
 // ============================================================================
 package com.elemental.battlepass.config;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigManager {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final FileConfiguration config;
 
-    public ConfigManager(ElementalBattlepassTracker plugin) {
+    public ConfigManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfig();
     }

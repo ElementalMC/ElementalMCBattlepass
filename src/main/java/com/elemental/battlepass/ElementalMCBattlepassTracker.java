@@ -17,9 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 
-public class ElementalBattlepassTracker extends JavaPlugin {
+public class ElementalMCBattlepassTracker extends JavaPlugin {
 
-    private static ElementalBattlepassTracker instance;
+    private static ElementalMCBattlepassTracker instance;
     
     private DatabaseManager databaseManager;
     private SeasonManager seasonManager;
@@ -96,7 +96,7 @@ public class ElementalBattlepassTracker extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
     }
 
-    public static ElementalBattlepassTracker getInstance() {
+    public static ElementalMCBattlepassTracker getInstance() {
         return instance;
     }
 

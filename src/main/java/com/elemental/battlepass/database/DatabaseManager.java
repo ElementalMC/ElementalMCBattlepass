@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.database;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +17,10 @@ import java.util.logging.Level;
 
 public class DatabaseManager {
 
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private HikariDataSource dataSource;
 
-    public DatabaseManager(ElementalBattlepassTracker plugin) {
+    public DatabaseManager(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
         initialize();
         createTables();

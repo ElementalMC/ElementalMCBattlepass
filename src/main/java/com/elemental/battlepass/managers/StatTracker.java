@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.managers;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -18,11 +18,11 @@ import java.util.logging.Level;
 
 public class StatTracker {
 
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final Map<String, Long> cachedStats = new ConcurrentHashMap<>();
     private static final int FLUSH_INTERVAL = 300;
 
-    public StatTracker(ElementalBattlepassTracker plugin) {
+    public StatTracker(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
         startAutoFlush();
     }

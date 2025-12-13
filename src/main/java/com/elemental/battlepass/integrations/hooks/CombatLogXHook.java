@@ -4,7 +4,7 @@
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
-import com.elemental.battlepass.ElementalBattlepassTracker;
+import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,10 +13,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CombatLogXHook implements Listener {
-    private final ElementalBattlepassTracker plugin;
+    private final ElementalMCBattlepassTracker plugin;
     private final Set<UUID> taggedPlayers = new HashSet<>();
 
-    public CombatLogXHook(ElementalBattlepassTracker plugin) {
+    public CombatLogXHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
     }
 
