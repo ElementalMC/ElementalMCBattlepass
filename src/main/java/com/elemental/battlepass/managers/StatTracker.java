@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: StatTracker.java
-// LOCATION: src/main/java/com/elemental/battlepass/managers/
+// FILE 7: StatTracker.java
+// LOCATION: src/main/java/com/elemental/battlepass/managers/StatTracker.java
+// REPLACE ENTIRE FILE - Added database connection checks
 // ============================================================================
 package com.elemental.battlepass.managers;
 
@@ -51,6 +52,11 @@ public class StatTracker {
             return cachedStats.get(key);
         }
 
+        // Only query database if connected
+        if (!plugin.getDatabaseManager().isConnected()) {
+            return 0;
+        }
+
         String sql = "SELECT amount FROM player_stats WHERE uuid = ? AND season_id = ? AND stat_type = ? AND stat_target = ?";
         
         try (Connection conn = plugin.getDatabaseManager().getConnection();
@@ -69,7 +75,9 @@ public class StatTracker {
             }
             
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to load stat: " + key, e);
+            if (plugin.getConfigManager().isDebugMode()) {
+                plugin.getLogger().log(Level.WARNING, "Failed to load stat: " + key, e);
+            }
         }
         
         return 0;
@@ -81,6 +89,14 @@ public class StatTracker {
 
     public void flushAllStats() {
         if (cachedStats.isEmpty()) return;
+        
+        // Only flush if database is connected
+        if (!plugin.getDatabaseManager().isConnected()) {
+            if (plugin.getConfigManager().isDebugMode()) {
+                plugin.getLogger().warning("Cannot flush stats - database not connected");
+            }
+            return;
+        }
 
         plugin.getLogger().info("Flushing " + cachedStats.size() + " cached stats to database...");
         

@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: PlayerConnectionListener.java
-// LOCATION: src/main/java/com/elemental/battlepass/listeners/
+// FILE 8: PlayerConnectionListener.java
+// LOCATION: src/main/java/com/elemental/battlepass/listeners/PlayerConnectionListener.java
+// REPLACE ENTIRE FILE - Added database connection checks
 // ============================================================================
 package com.elemental.battlepass.listeners;
 
@@ -49,12 +50,22 @@ public class PlayerConnectionListener implements Listener {
     }
 
     private void registerPlayer(UUID uuid, String username) {
+        // Only register if database is connected
+        if (!plugin.getDatabaseManager().isConnected()) {
+            return;
+        }
+        
         String sql = "INSERT INTO players (uuid, username) VALUES (?, ?) " +
                      "ON DUPLICATE KEY UPDATE username = VALUES(username)";
         plugin.getDatabaseManager().executeAsync(sql, uuid.toString(), username);
     }
 
     private void trackLoginStreak(UUID uuid) {
+        // Only track if database is connected
+        if (!plugin.getDatabaseManager().isConnected()) {
+            return;
+        }
+        
         int seasonId = plugin.getSeasonManager().getActiveSeasonId();
         if (seasonId == -1) return;
 
@@ -99,7 +110,9 @@ public class PlayerConnectionListener implements Listener {
                 plugin.getQuestManager().incrementProgress(uuid, "LOGIN_STREAK", null, newStreak);
                 
             } catch (SQLException e) {
-                plugin.getLogger().warning("Failed to track login streak: " + e.getMessage());
+                if (plugin.getConfigManager().isDebugMode()) {
+                    plugin.getLogger().warning("Failed to track login streak: " + e.getMessage());
+                }
             }
         });
     }

@@ -131,8 +131,7 @@ public class BattlepassCommand implements CommandExecutor {
         }
 
         plugin.reloadConfig();
-        plugin.getQuestManager().loadQuestsForActiveSeason();
-        sender.sendMessage(Component.text("Configuration reloaded!").color(NamedTextColor.GREEN));
+        sender.sendMessage(Component.text("Config reloaded!").color(NamedTextColor.GREEN));
         return true;
     }
 
@@ -151,6 +150,8 @@ public class BattlepassCommand implements CommandExecutor {
         
         return true;
     }
+
+
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(Component.text("=== Battlepass Commands ===").color(NamedTextColor.GOLD));
