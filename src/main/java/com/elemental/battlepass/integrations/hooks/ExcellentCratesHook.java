@@ -1,6 +1,5 @@
 // ============================================================================
 // FILE: ExcellentCratesHook.java
-// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
@@ -11,6 +10,7 @@ import org.bukkit.event.Listener;
 
 public class ExcellentCratesHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
+    private boolean registered = false;
 
     public ExcellentCratesHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -20,6 +20,7 @@ public class ExcellentCratesHook implements Listener {
         try {
             Class.forName("su.nightexpress.excellentcrates.api.event.CrateOpenEvent");
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            registered = true;
         } catch (ClassNotFoundException e) {
             plugin.getLogger().warning("ExcellentCrates classes not found, skipping integration");
         }
@@ -27,6 +28,8 @@ public class ExcellentCratesHook implements Listener {
 
     @EventHandler
     public void onCrateOpen(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("su.nightexpress.excellentcrates.api.event.CrateOpenEvent");
             if (!eventClass.isInstance(event)) return;

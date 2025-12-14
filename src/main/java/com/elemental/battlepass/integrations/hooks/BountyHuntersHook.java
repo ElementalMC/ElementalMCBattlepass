@@ -1,6 +1,5 @@
 // ============================================================================
 // FILE: BountyHuntersHook.java
-// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 

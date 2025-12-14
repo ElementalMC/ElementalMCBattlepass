@@ -1,6 +1,5 @@
 // ============================================================================
 // FILE: KixsChatGamesHook.java
-// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
@@ -11,6 +10,7 @@ import org.bukkit.event.Listener;
 
 public class KixsChatGamesHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
+    private boolean registered = false;
 
     public KixsChatGamesHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -20,6 +20,7 @@ public class KixsChatGamesHook implements Listener {
         try {
             Class.forName("io.github.kixsdesigns.chatgames.events.ChatGameWinEvent");
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            registered = true;
         } catch (ClassNotFoundException e) {
             plugin.getLogger().warning("KixsChatGames classes not found, skipping integration");
         }
@@ -27,6 +28,8 @@ public class KixsChatGamesHook implements Listener {
 
     @EventHandler
     public void onChatGameWin(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("io.github.kixsdesigns.chatgames.events.ChatGameWinEvent");
             if (!eventClass.isInstance(event)) return;

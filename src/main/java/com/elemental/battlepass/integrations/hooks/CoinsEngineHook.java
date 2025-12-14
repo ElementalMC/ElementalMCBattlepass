@@ -1,6 +1,5 @@
 // ============================================================================
 // FILE: CoinsEngineHook.java
-// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
@@ -11,6 +10,7 @@ import org.bukkit.event.Listener;
 
 public class CoinsEngineHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
+    private boolean registered = false;
 
     public CoinsEngineHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -20,6 +20,7 @@ public class CoinsEngineHook implements Listener {
         try {
             Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            registered = true;
         } catch (ClassNotFoundException e) {
             plugin.getLogger().warning("CoinsEngine classes not found, skipping integration");
         }
@@ -27,6 +28,8 @@ public class CoinsEngineHook implements Listener {
 
     @EventHandler
     public void onCoinsReceive(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
             if (!eventClass.isInstance(event)) return;
@@ -46,6 +49,8 @@ public class CoinsEngineHook implements Listener {
 
     @EventHandler
     public void onCoinsTransfer(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsTransferEvent");
             if (!eventClass.isInstance(event)) return;

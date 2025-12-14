@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 
 public class ProjectKorraHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
+    private boolean registered = false;
 
     public ProjectKorraHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -19,9 +20,13 @@ public class ProjectKorraHook implements Listener {
 
     public void hook() {
         try {
-            // Only register if ProjectKorra is actually loaded
+            // Check if ProjectKorra is actually loaded
             Class.forName("com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent");
+            Class.forName("com.projectkorra.projectkorra.event.AbilityDamageEntityEvent");
+            
+            // Only register if classes exist
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            registered = true;
         } catch (ClassNotFoundException e) {
             plugin.getLogger().warning("ProjectKorra classes not found, skipping integration");
         }
@@ -29,8 +34,9 @@ public class ProjectKorraHook implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAbilityUse(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
-            // Use reflection to handle ProjectKorra events
             Class<?> eventClass = Class.forName("com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent");
             if (!eventClass.isInstance(event)) return;
             
@@ -55,12 +61,14 @@ public class ProjectKorraHook implements Listener {
             plugin.getQuestManager().incrementProgress(player.getUniqueId(), "BENDING_USE", elementName, 1);
             plugin.getQuestManager().incrementProgress(player.getUniqueId(), "BENDING_ABILITY", abilityName, 1);
         } catch (Exception e) {
-            // Silently fail if something goes wrong
+            // Silently fail
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAbilityDamage(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("com.projectkorra.projectkorra.event.AbilityDamageEntityEvent");
             if (!eventClass.isInstance(event)) return;

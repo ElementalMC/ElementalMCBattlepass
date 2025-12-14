@@ -1,6 +1,5 @@
 // ============================================================================
 // FILE: NuVotifierHook.java
-// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
@@ -12,6 +11,7 @@ import org.bukkit.event.Listener;
 
 public class NuVotifierHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
+    private boolean registered = false;
 
     public NuVotifierHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -21,6 +21,7 @@ public class NuVotifierHook implements Listener {
         try {
             Class.forName("com.vexsoftware.votifier.model.VotifierEvent");
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            registered = true;
         } catch (ClassNotFoundException e) {
             plugin.getLogger().warning("NuVotifier classes not found, skipping integration");
         }
@@ -28,6 +29,8 @@ public class NuVotifierHook implements Listener {
 
     @EventHandler
     public void onVote(org.bukkit.event.Event event) {
+        if (!registered) return;
+        
         try {
             Class<?> eventClass = Class.forName("com.vexsoftware.votifier.model.VotifierEvent");
             if (!eventClass.isInstance(event)) return;
