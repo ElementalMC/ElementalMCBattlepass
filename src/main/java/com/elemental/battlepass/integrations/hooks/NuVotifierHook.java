@@ -1,17 +1,16 @@
 // ============================================================================
 // FILE: NuVotifierHook.java
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class NuVotifierHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
-    private boolean registered = false;
 
     public NuVotifierHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -19,21 +18,24 @@ public class NuVotifierHook implements Listener {
 
     public void hook() {
         try {
-            Class.forName("com.vexsoftware.votifier.model.VotifierEvent");
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            Class<?> eventClass = Class.forName("com.vexsoftware.votifier.model.VotifierEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                eventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onVote(event),
+                plugin
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("NuVotifier classes not found, skipping integration");
+            plugin.getLogger().info("NuVotifier not found, skipping integration");
         }
     }
 
-    @EventHandler
     public void onVote(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("com.vexsoftware.votifier.model.VotifierEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getVote = eventClass.getMethod("getVote");
             Object vote = getVote.invoke(event);

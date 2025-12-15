@@ -1,16 +1,15 @@
 // ============================================================================
 // FILE: ExcellentCratesHook.java
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ExcellentCratesHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
-    private boolean registered = false;
 
     public ExcellentCratesHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -18,21 +17,24 @@ public class ExcellentCratesHook implements Listener {
 
     public void hook() {
         try {
-            Class.forName("su.nightexpress.excellentcrates.api.event.CrateOpenEvent");
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            Class<?> eventClass = Class.forName("su.nightexpress.excellentcrates.api.event.CrateOpenEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                eventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onCrateOpen(event),
+                plugin
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("ExcellentCrates classes not found, skipping integration");
+            plugin.getLogger().info("ExcellentCrates not found, skipping integration");
         }
     }
 
-    @EventHandler
     public void onCrateOpen(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("su.nightexpress.excellentcrates.api.event.CrateOpenEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
             Player player = (Player) getPlayer.invoke(event);

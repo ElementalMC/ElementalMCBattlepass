@@ -1,16 +1,15 @@
 // ============================================================================
 // FILE: ZAuctionHouseHook.java
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ZAuctionHouseHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
-    private boolean registered = false;
 
     public ZAuctionHouseHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -18,21 +17,33 @@ public class ZAuctionHouseHook implements Listener {
 
     public void hook() {
         try {
-            Class.forName("fr.maxlego08.zauctionhouse.api.event.events.AuctionSellEvent");
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            Class<?> sellEventClass = Class.forName("fr.maxlego08.zauctionhouse.api.event.events.AuctionSellEvent");
+            Class<?> buyEventClass = Class.forName("fr.maxlego08.zauctionhouse.api.event.events.AuctionBuyEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                sellEventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onAuctionSell(event),
+                plugin
+            );
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                buyEventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onAuctionBuy(event),
+                plugin
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("zAuctionHouse classes not found, skipping integration");
+            plugin.getLogger().info("zAuctionHouse not found, skipping integration");
         }
     }
 
-    @EventHandler
     public void onAuctionSell(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("fr.maxlego08.zauctionhouse.api.event.events.AuctionSellEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
             Player player = (Player) getPlayer.invoke(event);
@@ -44,13 +55,9 @@ public class ZAuctionHouseHook implements Listener {
         }
     }
 
-    @EventHandler
     public void onAuctionBuy(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("fr.maxlego08.zauctionhouse.api.event.events.AuctionBuyEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
             Player player = (Player) getPlayer.invoke(event);

@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.EventExecutor;
 
 public class ProjectKorraHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
-    private boolean registered = false;
 
     public ProjectKorraHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -20,25 +20,37 @@ public class ProjectKorraHook implements Listener {
 
     public void hook() {
         try {
-            // Check if ProjectKorra is actually loaded
-            Class.forName("com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent");
-            Class.forName("com.projectkorra.projectkorra.event.AbilityDamageEntityEvent");
+            // Check if ProjectKorra is loaded
+            Class<?> cooldownEventClass = Class.forName("com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent");
+            Class<?> damageEventClass = Class.forName("com.projectkorra.projectkorra.event.AbilityDamageEntityEvent");
             
-            // Only register if classes exist
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            // Register using EventExecutor to handle events dynamically
+            plugin.getServer().getPluginManager().registerEvent(
+                cooldownEventClass,
+                this,
+                org.bukkit.event.EventPriority.MONITOR,
+                (listener, event) -> onAbilityUse(event),
+                plugin,
+                true
+            );
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                damageEventClass,
+                this,
+                org.bukkit.event.EventPriority.MONITOR,
+                (listener, event) -> onAbilityDamage(event),
+                plugin,
+                true
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("ProjectKorra classes not found, skipping integration");
+            plugin.getLogger().info("ProjectKorra not found, skipping integration");
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAbilityUse(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method isCooldownStarting = eventClass.getMethod("isCooldownStarting");
             if (!(Boolean) isCooldownStarting.invoke(event)) return;
@@ -65,13 +77,9 @@ public class ProjectKorraHook implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAbilityDamage(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("com.projectkorra.projectkorra.event.AbilityDamageEntityEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getDamager = eventClass.getMethod("getDamager");
             Object damager = getDamager.invoke(event);

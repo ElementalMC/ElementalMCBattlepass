@@ -1,16 +1,15 @@
 // ============================================================================
 // FILE: CoinsEngineHook.java
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class CoinsEngineHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
-    private boolean registered = false;
 
     public CoinsEngineHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -18,21 +17,33 @@ public class CoinsEngineHook implements Listener {
 
     public void hook() {
         try {
-            Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            Class<?> receiveEventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
+            Class<?> transferEventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsTransferEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                receiveEventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onCoinsReceive(event),
+                plugin
+            );
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                transferEventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onCoinsTransfer(event),
+                plugin
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("CoinsEngine classes not found, skipping integration");
+            plugin.getLogger().info("CoinsEngine not found, skipping integration");
         }
     }
 
-    @EventHandler
     public void onCoinsReceive(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsReceiveEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
             Player player = (Player) getPlayer.invoke(event);
@@ -47,13 +58,9 @@ public class CoinsEngineHook implements Listener {
         }
     }
 
-    @EventHandler
     public void onCoinsTransfer(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("su.nightexpress.coinsengine.api.event.CoinsTransferEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getSender = eventClass.getMethod("getSender");
             Player sender = (Player) getSender.invoke(event);

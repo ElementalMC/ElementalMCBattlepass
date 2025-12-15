@@ -1,11 +1,11 @@
 // ============================================================================
 // FILE: CombatLogXHook.java
+// PATH: src/main/java/com/elemental/battlepass/integrations/hooks/
 // ============================================================================
 package com.elemental.battlepass.integrations.hooks;
 
 import com.elemental.battlepass.ElementalMCBattlepassTracker;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +14,6 @@ import java.util.UUID;
 public class CombatLogXHook implements Listener {
     private final ElementalMCBattlepassTracker plugin;
     private final Set<UUID> taggedPlayers = new HashSet<>();
-    private boolean registered = false;
 
     public CombatLogXHook(ElementalMCBattlepassTracker plugin) {
         this.plugin = plugin;
@@ -22,21 +21,24 @@ public class CombatLogXHook implements Listener {
 
     public void hook() {
         try {
-            Class.forName("com.github.sirblobman.combatlogx.api.event.PlayerTagEvent");
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            registered = true;
+            Class<?> eventClass = Class.forName("com.github.sirblobman.combatlogx.api.event.PlayerTagEvent");
+            
+            plugin.getServer().getPluginManager().registerEvent(
+                eventClass,
+                this,
+                org.bukkit.event.EventPriority.NORMAL,
+                (listener, event) -> onPlayerTag(event),
+                plugin
+            );
+            
         } catch (ClassNotFoundException e) {
-            plugin.getLogger().warning("CombatLogX classes not found, skipping integration");
+            plugin.getLogger().info("CombatLogX not found, skipping integration");
         }
     }
 
-    @EventHandler
     public void onPlayerTag(org.bukkit.event.Event event) {
-        if (!registered) return;
-        
         try {
-            Class<?> eventClass = Class.forName("com.github.sirblobman.combatlogx.api.event.PlayerTagEvent");
-            if (!eventClass.isInstance(event)) return;
+            Class<?> eventClass = event.getClass();
             
             java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
             Player player = (Player) getPlayer.invoke(event);
